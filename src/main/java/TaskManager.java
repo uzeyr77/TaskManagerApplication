@@ -70,13 +70,13 @@ public class TaskManager {
 
         for (int i = 0; i < tasks.size(); i++) {
             node = om.createObjectNode();
-            String json = om.writeValueAsString(tasks.get(i)); // serialize, task obj --> json
-            Task copy = om.readValue(json, Task.class); // deserialize back, json --> task obj
-            node.put("ID", copy.getId());
-            node.put("Description", copy.getDescription());
-            node.put("Status", copy.getStatus());
-            node.put("Created At", copy.getCreatedAt());
-            node.put("Updated At", copy.getUpdatedAt());
+//            String json = om.writeValueAsString(tasks.get(i)); // serialize, task obj --> String in json form
+//            Task copy = om.readValue(json, Task.class); // deserialize back, json --> task obj
+            node.put("ID", tasks.get(i).getId());
+            node.put("Description", tasks.get(i).getId());
+            node.put("Status", tasks.get(i).getId());
+            node.put("Created At", tasks.get(i).getId());
+            node.put("Updated At", tasks.get(i).getId());
 
             jsonNodeList.add(node);
             try {
