@@ -141,23 +141,23 @@ public class TaskManager {
 
     public void updateStatus(int taskID, String status) {
         ArrayList<Task> updatedList = new ArrayList<>();
-        for(int i = 0; i < tasks.size();i++) {
 
-            if(tasks.get(i).getId() == taskID) {
-                tasks.get(i).setStatus(status);
-                tasks.get(i).setUpdatedAt(LocalDate.now().toString());
+        for (Task task : tasks) {
+            if (task.getId() == taskID) {
+                task.setStatus(status);
+                task.setUpdatedAt(LocalDate.now().toString());
                 break;
-                //updatedList = tasks;
             }
+
+
+            try {
+                om.writeValue(file, tasks);
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
         }
-
-        try {
-            om.writeValue(file, tasks);
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
     }
 
     public void addTaskToJson(Task t) {

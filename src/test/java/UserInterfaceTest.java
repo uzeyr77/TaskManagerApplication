@@ -345,6 +345,76 @@ class UserInterfaceTest {
 
         assertTrue(output.contains("Task 3 has been marked as done"));
     }
+    @Test
+
+    void run_testingListingAllWhenListIsEmpty() {
+        TaskManager tm = new TaskManager();
+        ObjectMapper om = new ObjectMapper();
+        String fakeInput = "list\n-1\n";
+        ByteArrayOutputStream outputBuffer = new ByteArrayOutputStream();
+        Scanner s = new Scanner(new ByteArrayInputStream(fakeInput.getBytes()));
+        PrintStream fakeOut = new PrintStream(outputBuffer);
+        UserInterface ui = new UserInterface();
+
+        ui.run(tm, s, fakeOut);
+        String output = outputBuffer.toString();
+        //System.out.println(output);
+
+        assertTrue(output.contains("LIST IS EMPTY!\nAdd tasks to see list."));
+    }
+    @Test
+
+    void run_testingListingInProgWhenListIsEmpty() {
+        TaskManager tm = new TaskManager();
+        ObjectMapper om = new ObjectMapper();
+        String fakeInput = "list in-progress\n-1\n";
+        ByteArrayOutputStream outputBuffer = new ByteArrayOutputStream();
+        Scanner s = new Scanner(new ByteArrayInputStream(fakeInput.getBytes()));
+        PrintStream fakeOut = new PrintStream(outputBuffer);
+        UserInterface ui = new UserInterface();
+
+        ui.run(tm, s, fakeOut);
+        String output = outputBuffer.toString();
+        //System.out.println(output);
+
+        assertTrue(output.contains("LIST IS EMPTY!\nAdd tasks to see list."));
+    }
+    @Test
+
+    void run_testingListingToDoWhenListIsEmpty() {
+        TaskManager tm = new TaskManager();
+        ObjectMapper om = new ObjectMapper();
+        String fakeInput = "list to-do\n-1\n";
+        ByteArrayOutputStream outputBuffer = new ByteArrayOutputStream();
+        Scanner s = new Scanner(new ByteArrayInputStream(fakeInput.getBytes()));
+        PrintStream fakeOut = new PrintStream(outputBuffer);
+        UserInterface ui = new UserInterface();
+
+        ui.run(tm, s, fakeOut);
+        String output = outputBuffer.toString();
+        //System.out.println(output);
+
+        assertTrue(output.contains("LIST IS EMPTY!\nAdd tasks to see list."));
+    }
+
+    @Test
+
+    void run_testingListingDoneWhenListIsEmpty() {
+        TaskManager tm = new TaskManager();
+        ObjectMapper om = new ObjectMapper();
+        String fakeInput = "list done\n-1\n";
+        ByteArrayOutputStream outputBuffer = new ByteArrayOutputStream();
+        Scanner s = new Scanner(new ByteArrayInputStream(fakeInput.getBytes()));
+        PrintStream fakeOut = new PrintStream(outputBuffer);
+        UserInterface ui = new UserInterface();
+
+        ui.run(tm, s, fakeOut);
+        String output = outputBuffer.toString();
+        //System.out.println(output);
+
+        assertTrue(output.contains("LIST IS EMPTY!\nAdd tasks to see list."));
+    }
+
 
 
 

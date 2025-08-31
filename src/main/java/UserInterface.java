@@ -267,18 +267,34 @@ public class UserInterface {
             if (sentence.equals("-1")) break;
 
             if (sentence.isEmpty()) {
-                System.out.print("Invalid input");
+                System.out.println("Invalid input");
                 break;
             } else if (sentence.equals("list")) {
-                System.out.print(tm.listAll());
+                if(tm.getTasks().isEmpty()) {
+                    System.out.println("LIST IS EMPTY!\nAdd tasks to see list.");
+                    continue;
+                }
+                System.out.println(tm.listAll());
                 continue;
             } else if(sentence.equals("list in-progress")) {
+                if(tm.getTasks().isEmpty()) {
+                    System.out.println("LIST IS EMPTY!\nAdd tasks to see list.");
+                    continue;
+                }
                 System.out.println(tm.listInProg());
                 continue;
             } else if (sentence.equals("list to-do")) {
+                if(tm.getTasks().isEmpty()) {
+                    System.out.println("LIST IS EMPTY!\nAdd tasks to see list.");
+                    continue;
+                }
                 System.out.println(tm.listTodo());
                 continue;
             } else if (sentence.equals("list done")) {
+                if(tm.getTasks().isEmpty()) {
+                    System.out.println("LIST IS EMPTY!\nAdd tasks to see list.");
+                    continue;
+                }
                 System.out.println(tm.listDone());
                 continue;
             }
@@ -295,7 +311,7 @@ public class UserInterface {
 
                         // else
                         tm.delete(taskId);
-                        System.out.print("Task " + taskId + " has been deleted");
+                        System.out.println("Task " + taskId + " has been deleted");
                     } else if (cmd.equals("update")) {
                         if(tm.findTask(taskId) == -1) System.out.println("TASK DNE (CANT UPDATE)");
 
@@ -303,14 +319,14 @@ public class UserInterface {
                         String descriptionUpdate = s.nextLine();
                         // else
                         tm.update(taskId, descriptionUpdate);
-                        System.out.print("Task " + taskId + " has been updated");
+                        System.out.println("Task " + taskId + " has been updated");
 
                     } else if (cmd.equals("mark-in-progress")) {
                         if(tm.findTask(taskId) == -1) System.out.println("TASK DNE (CANT UPDATE STATUS)");
 
                         // else
                         tm.updateStatus(taskId, "in-progress");
-                        System.out.print("Task " + taskId + " has been marked in progress");
+                        System.out.println("Task " + taskId + " has been marked in progress");
                     } else if (cmd.equals("mark-to-do")) {
                         if(tm.findTask(taskId) == -1) System.out.println("TASK DNE (CANT UPDATE STATUS)");
 
@@ -368,15 +384,31 @@ public class UserInterface {
                 out.print("Invalid input");
                 break;
             } else if (sentence.equals("list")) {
+                if(tm.getTasks().isEmpty()) {
+                    out.println("LIST IS EMPTY!\nAdd tasks to see list.");
+                    continue;
+                }
                 out.print(tm.listAll());
                 continue;
             } else if(sentence.equals("list in-progress")) {
+                if(tm.getTasks().isEmpty()) {
+                    out.println("LIST IS EMPTY!\nAdd tasks to see list.");
+                    continue;
+                }
                 out.println(tm.listInProg());
                 continue;
             } else if (sentence.equals("list to-do")) {
+                if(tm.getTasks().isEmpty()) {
+                    out.println("LIST IS EMPTY!\nAdd tasks to see list.");
+                    continue;
+                }
                 out.println(tm.listTodo());
                 continue;
             } else if (sentence.equals("list done")) {
+                if(tm.getTasks().isEmpty()) {
+                    out.println("LIST IS EMPTY!\nAdd tasks to see list.");
+                    continue;
+                }
                 out.println(tm.listDone());
                 continue;
             }
