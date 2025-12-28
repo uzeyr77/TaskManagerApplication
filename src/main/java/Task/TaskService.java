@@ -1,25 +1,32 @@
 package Task;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 
 public class TaskService {
     public static boolean ISVALID;
-    private static List<String> taskIds = new ArrayList<>();
     private TaskDAO taskDAO;
+    private static final String alphabet = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private static Random random = new Random();
     public TaskService(TaskDAO taskDAO) {
         this.taskDAO = taskDAO;
 
     }
-
-    public static String setTaskId() {
-        String id = TaskIDGenerator.generateID();
-        if(!taskIds.isEmpty() && taskIds.contains(id)) throw new RuntimeException("ID cannot be set, the ID already exists");
-        return id;
+    public static String generateId() {
+        StringBuilder uniqueId = new StringBuilder();
+        for(int i = 0; i < 5;i++) {
+            uniqueId.append(alphabet.charAt(random.nextInt(0,36)));
+        }
+        return uniqueId.toString();
     }
-    public boolean insertTask(Task task) {
+    public boolean createTask(String description,TaskStatus status) {
         // validate task first
+        if(description == null || description.isEmpty()) throw new InvalidTaskDescriptionException("The description: " + description + " is not valid");
+        if(status == null) throw new InvalidStatusException("Null status not excepted");
+        String id = generateId();
+        Task task = new Task(id, description, status);
         try {
             return taskDAO.save(task);
         } catch (SQLException e) {
@@ -34,7 +41,7 @@ public class TaskService {
             throw new TaskNotFoundException("Task with ID: " + id + " not found", e);
         }
     }
-    public Task getTaskByID(String id) {
+    public Optional<Task> getTaskByID(String id) {
         if(id == null || id.length() < 5) throw new InvalidTaskIdException("The id: " + id + " is not valid");
         try {
             return taskDAO.getByID(id);
@@ -44,8 +51,8 @@ public class TaskService {
 
 
     }
-    public Task getTaskByDescription(String desc) {
-        if(desc == null || desc.length() < 15) throw new InvalidTaskDescriptionException("Task description: " + desc + " is too short");
+    public Optional<Task> getTaskByDescription(String desc) {
+        if(desc == null || desc.length() < 5) throw new InvalidTaskDescriptionException("Task description: " + desc + " is too short");
         try {
             return taskDAO.getByDescription(desc);
         } catch(SQLException e) {
@@ -55,7 +62,7 @@ public class TaskService {
     }
     public List<Task> getAllTasks() {
         try {
-            return taskDAO.getAll();
+            return taskDAO.findAll();
         } catch(SQLException e) {
             throw new TaskNotFoundException("Tasks not found", e);
         }
@@ -72,7 +79,7 @@ public class TaskService {
 
     public boolean updateDescription(String id, String desc) {
         if(id == null || id.length() < 5) throw new InvalidTaskIdException("The id: " + id + " is not valid");
-        else if(desc == null || desc.length() < 15) throw new InvalidTaskDescriptionException("Task description: " + desc + " is too short");
+        else if(desc == null || desc.length() < 5) throw new InvalidTaskDescriptionException("Task description: " + desc + " is too short");
         try {
             return taskDAO.update(id, desc);
         } catch(SQLException e) {

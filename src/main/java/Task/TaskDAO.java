@@ -15,19 +15,17 @@ public class TaskDAO {
     public boolean save(Task task) throws SQLException{
         if(task == null) throw new RuntimeException("CANNOT INSERT NULL TASK");
         Connection con = this.dataSource.getConnection();
-        String sql = "INSERT INTO tasks (ID, Description, Status, DateCreated) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO tasks (ID, Description, Status, DateCreated, UpdatedAt) VALUES (?, ?, ?, ?, ?)";
         PreparedStatement pstmt = con.prepareStatement(sql);
         pstmt.setString(1,task.getId());
         pstmt.setString(2, task.getDescription());
         pstmt.setString(3,task.getStatus().toString().toLowerCase().replace("_", " "));
-        pstmt.setString(4, task.getCreatedAt().toString());
+        pstmt.setString(4, task.getDateCreated().toString());
+        pstmt.setString(5,null); // null when initially inserted
         int result = pstmt.executeUpdate();
         dataSource.closeConnection(con);
         dataSource.closePreparedStatement(pstmt);
         return result != 0;
-    }
-    public List<Task> findAll() {
-        return null;
     }
     public boolean update(String id, String newDesc) throws SQLException {
         if(id == null || id.length() < 5 || newDesc == null) throw new RuntimeException("INVALID ID, CANT GET TASK DESCRIPTION");
@@ -69,11 +67,11 @@ public class TaskDAO {
         dataSource.closePreparedStatement(pstmt);
         return result != 0;
     }
-    public Task getByID(String id) throws SQLException {
+    public Optional<Task> getByID(String id) throws SQLException {
         if(id == null || id.length() < 5) throw new RuntimeException("INVALID ID, CANT GET TASK");
         Task result = null;
         Connection con = dataSource.getConnection();
-        String sql = "SELECT ID, Description, Status, DateCreated FROM tasks WHERE ID= ?"; // SELECT column_name FROM your_table_name WHERE id = ?"
+        String sql = "SELECT ID, Description, Status, DateCreated, UpdatedAt FROM tasks WHERE ID= ?"; // SELECT column_name FROM your_table_name WHERE id = ?"
         PreparedStatement pstmt = con.prepareStatement(sql);
 
         pstmt.setString(1,id);
@@ -81,21 +79,27 @@ public class TaskDAO {
             while(rs.next()) {
                 String desc = rs.getString("Description");
                 if(rs.getString("Status").equals("in progress")) {
-                    result = new Task(desc, TaskStatus.IN_PROGRESS);
+                    result = new Task(id,desc, TaskStatus.IN_PROGRESS);
                 } else {
-                    result = new Task(desc, TaskStatus.valueOf(rs.getString("Status").toUpperCase()));
+                    result = new Task(id, desc, TaskStatus.valueOf(rs.getString("Status").toUpperCase()));
+                }
+                if(rs.getString("UpdatedAt") == null) {
+                    result.setUpdatedAt(null);
+                } else {
+                    result.setUpdatedAt(LocalDate.parse(rs.getString("UpdatedAt")));
                 }
                 result.setId(id);
+
             }
         Optional<Task> opt = Optional.ofNullable(result);
         dataSource.closeConnection(con);
         dataSource.closePreparedStatement(pstmt);
         dataSource.closeResultSet(rs);
 
-        return opt.orElse(new Task("UNKNOWN", TaskStatus.NONE)); // return Optional<Task.Task>
+        return opt;
     }
 
-    public List<Task> getAll() throws SQLException {
+    public List<Task> findAll() throws SQLException {
         List<Task> taskList = new ArrayList<>();
         Task task;
         Connection con = dataSource.getConnection();
@@ -109,12 +113,12 @@ public class TaskDAO {
             String dateCreated = rs.getString("DateCreated");
             String dateUpdated = rs.getString("UpdatedAt");
             if (status.equals("in progress")) {
-                task = new Task(desc, TaskStatus.IN_PROGRESS);
+                task = new Task(id, desc, TaskStatus.IN_PROGRESS);
             } else {
-                task = new Task(desc, TaskStatus.valueOf(status.toUpperCase()));
+                task = new Task(id, desc, TaskStatus.valueOf(status.toUpperCase()));
             }
             task.setId(id);
-            task.setCreatedAt(LocalDate.parse(dateCreated));
+            task.setDateCreated(LocalDate.parse(dateCreated));
             if(dateUpdated != null) {
                 task.setUpdatedAt(LocalDate.parse(dateUpdated));
             } else {
@@ -128,7 +132,7 @@ public class TaskDAO {
             dataSource.closeConnection(con);
             return taskList;
     }
-    public Task getByDescription(String desc) throws SQLException {
+    public Optional<Task> getByDescription(String desc) throws SQLException {
         if(desc == null || desc.isEmpty()) throw new RuntimeException("EMPTY DESCRIPTION");
         Task result = null;
         Connection con = dataSource.getConnection();
@@ -141,9 +145,9 @@ public class TaskDAO {
             System.out.println(rs.next());
             String id = rs.getString("ID");
             if(rs.getString("Status").equals("in progress")) {
-                result = new Task(desc, TaskStatus.IN_PROGRESS);
+                result = new Task(id, desc, TaskStatus.IN_PROGRESS);
             } else {
-                result = new Task(desc, TaskStatus.valueOf(rs.getString("Status").toUpperCase()));
+                result = new Task(id, desc, TaskStatus.valueOf(rs.getString("Status").toUpperCase()));
             }
             result.setId(id);
         }
@@ -151,7 +155,7 @@ public class TaskDAO {
         dataSource.closeConnection(con);
         dataSource.closePreparedStatement(pstmt);
         dataSource.closeResultSet(rs);
-        return opt.orElse(new Task("UNKNOWN", TaskStatus.NONE));
+        return opt;
     }
 
     public List<Task> getAllByStatus(TaskStatus status) throws SQLException {
@@ -168,12 +172,12 @@ public class TaskDAO {
             String dateCreated = rs.getString("DateCreated");
             String dateUpdated = rs.getString("UpdatedAt");
             if (status.toString().equals("in progress")) {
-                task = new Task(desc, TaskStatus.IN_PROGRESS);
+                task = new Task(id, desc, TaskStatus.IN_PROGRESS);
             } else {
-                task = new Task(desc, status);
+                task = new Task(id, desc, status);
             }
             task.setId(id);
-            task.setCreatedAt(LocalDate.parse(dateCreated));
+            task.setDateCreated(LocalDate.parse(dateCreated));
             if(dateUpdated != null) {
                 task.setUpdatedAt(LocalDate.parse(dateUpdated));
             } else {

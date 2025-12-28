@@ -9,22 +9,21 @@ public class Task {
     private String description;
     private TaskStatus status;
     @JsonFormat(pattern = "yyyy-MM-dd") // annotation to make sure when task obj --> json object it follows this format
-    private LocalDate createdAt;
-    static int count = 0;
-    private LocalDate updateDate;
+    private LocalDate dateCreated;
+    private LocalDate dateUpdated;
 
-    public Task(String description, TaskStatus status) {
-        this.id = TaskService.setTaskId();
+    public Task(String id, String description, TaskStatus status) {
+        this.id = id;
         this.status = status;
         this.description = description;
-        this.createdAt = LocalDate.now();
-        this.updateDate = LocalDate.now();
+        this.dateCreated = LocalDate.now();
+        this.dateUpdated = null;
     }
     public Task(Task other) {
         this.id = other.getId();
         this.description = other.getDescription();
-        this.status = TaskStatus.valueOf(other.getStatus().toString().toUpperCase());
-        this.setCreatedAt(other.getCreatedAt());
+        this.status = other.getStatus();
+        this.setDateCreated(other.getDateCreated());
     }
 
     public String getId() {
@@ -39,23 +38,23 @@ public class Task {
         return status;
     }
 
+    public LocalDate getDateCreated() {
+        return this.dateCreated;
+    }
+
+    public LocalDate getDateUpdated() {
+        return this.dateUpdated;
+    }
+
     public void setId(String id) {
+        // call task service to validate the ID
         this.id = id;
     }
-
-    public LocalDate getCreatedAt() {
-        return this.createdAt;
-    }
-
-    public void setCreatedAt(LocalDate createdAt) {
-        this.createdAt = createdAt;
-    }
-    public String getUpdatedAt() {
-        return this.updateDate.toString();
+    public void setDateCreated(LocalDate dateCreated) {
+        this.dateCreated = dateCreated;
     }
     public void setUpdatedAt(LocalDate updatedAt) {
-        //this.updatedAt = updatedAt;
-        updateDate = updatedAt;
+        dateUpdated = updatedAt;
     }
     public void setDescription(String description) {
         this.description = description;
@@ -77,15 +76,15 @@ public class Task {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, description, status);
+        return Objects.hash(id, description);
     }
 
     @Override
     public String toString() {
-        return "id=" + id +
-                ", description='" + description + '\'' +
-                ", status='" + this.getStatus().toString().toLowerCase().replace("_", " ") + '\'' +
-                ", created at= '" + createdAt + '\'' +
-                ", updated at= '" + updateDate + "'";
+        return "{id=" + id +
+                ", description = '" + description + '\'' +
+                ", status = '" + this.getStatus().toString().toLowerCase().replace("_", " ") + '\'' +
+                ", created at = '" + dateCreated + '\'' +
+                ", updated at = '" + dateUpdated + "'}";
     }
 }

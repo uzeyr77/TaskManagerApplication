@@ -30,14 +30,18 @@ public class Main {
         TaskService taskService = new TaskService(taskDAO);
         //System.out.println(taskService.insertTask(new Task("NOT DONE", TaskStatus.IN_PROGRESS)));
         //System.out.println(taskService.updateStatus("44OUD",TaskStatus.DONE));
-        System.out.println(taskService.getTaskByID("44OUD"));
-        System.out.println(taskService.updateDescription("44OUD", "testing456"));
-        System.out.println(taskService.getByStatus(TaskStatus.DONE));
-        System.out.println(taskService.getAllTasks());
-        System.out.println(taskService.updateStatus("I7RGI",TaskStatus.DONE));
-        System.out.println("Here are all the done tasks " + taskService.getAllByStatus(TaskStatus.DONE));
-        System.out.println("here are all the to-dos " + taskService.getAllByStatus(TaskStatus.TODO));
-
+//        System.out.println(taskService.getTaskByID("44OUD"));
+//        System.out.println(taskService.updateDescription("44OUD", "testing456"));
+//        System.out.println(taskService.getByStatus(TaskStatus.DONE));
+//        System.out.println(taskService.getAllTasks());
+//        System.out.println(taskService.updateStatus("I7RGI",TaskStatus.DONE));
+//        System.out.println("Here are all the done tasks " + taskService.getAllByStatus(TaskStatus.DONE));
+//        System.out.println("here are all the to-dos " + taskService.getAllByStatus(TaskStatus.TODO));
+//        System.out.println("here are all the tasks " + taskService.getAllTasks());
+//        System.out.println(taskService.deleteTask("P8CL5"));
+//        System.out.println(taskService.deleteTask("I7RGI"));
+//        System.out.println(taskService.getAllTasks());
+//        System.out.println(taskService.updateStatus("QUWAT", TaskStatus.NONE));
 
 
     }
