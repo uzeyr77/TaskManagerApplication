@@ -36,7 +36,7 @@ public class TaskManagerImpl implements TaskManager {
         for (Task task : tasks.allTasks()) {
             if (task.getId().equals(taskID)) {
                 task.setStatus(status);
-                task.setUpdatedAt(LocalDate.now());
+                task.setDateUpdated(LocalDate.now());
                 break;
             }
         }

@@ -6,57 +6,60 @@ import java.util.Optional;
 import java.util.Random;
 
 public class TaskService {
-    public static boolean ISVALID;
     private TaskDAO taskDAO;
-    private static final String alphabet = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    private static Random random = new Random();
     public TaskService(TaskDAO taskDAO) {
         this.taskDAO = taskDAO;
 
     }
-    public static String generateId() {
+    public String generateId()  {
         StringBuilder uniqueId = new StringBuilder();
-        for(int i = 0; i < 5;i++) {
-            uniqueId.append(alphabet.charAt(random.nextInt(0,36)));
-        }
+        Random random = new Random();
+        final String alphabet = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        do {
+            uniqueId.delete(0, uniqueId.length()); // reset
+            for (int i = 0; i < 5; i++) {
+                uniqueId.append(alphabet.charAt(random.nextInt(0, 36)));
+            }
+        } while(checkDuplicateID(uniqueId.toString()));
+
         return uniqueId.toString();
     }
     public boolean createTask(String description,TaskStatus status) {
         // validate task first
-        if(description == null || description.isEmpty()) throw new InvalidTaskDescriptionException("The description: " + description + " is not valid");
-        if(status == null) throw new InvalidStatusException("Null status not excepted");
-        String id = generateId();
+        this.validDescription(description);
+        this.validStatus(status);
+        String id = this.generateId();
         Task task = new Task(id, description, status);
         try {
             return taskDAO.save(task);
         } catch (SQLException e) {
-            throw new TaskPersistanceException("Cannot save Task: "+ task.toString(), e);
+            throw new TaskPersistenceException("Failed to save task: "+ task.toString(), e);
         }
     }
     public boolean deleteTask(String id) {
-        if(id == null || id.length() < 5) throw new InvalidTaskIdException("The id: " + id + " is not valid");
+        this.validId(id);
         try {
             return taskDAO.delete(id);
         } catch (SQLException e) {
-            throw new TaskNotFoundException("Task with ID: " + id + " not found", e);
+            throw new DataAccessException("Failed to delete task with id: " + id, e);
         }
     }
     public Optional<Task> getTaskByID(String id) {
-        if(id == null || id.length() < 5) throw new InvalidTaskIdException("The id: " + id + " is not valid");
+        this.validId(id);
         try {
-            return taskDAO.getByID(id);
+            return taskDAO.get(id);
         } catch (SQLException e) {
-            throw new TaskNotFoundException("Task with ID: " + id + " not found", e);
+            throw new DataAccessException("Failed to retrieve task with ID: " + id, e);
         }
 
 
     }
     public Optional<Task> getTaskByDescription(String desc) {
-        if(desc == null || desc.length() < 5) throw new InvalidTaskDescriptionException("Task description: " + desc + " is too short");
+        this.validDescription(desc);
         try {
             return taskDAO.getByDescription(desc);
         } catch(SQLException e) {
-            throw new TaskNotFoundException("Task with Description: " + desc + " not found", e);
+            throw new DataAccessException("Failed to retrieve task with Description: " + desc, e);
         }
 
     }
@@ -64,68 +67,66 @@ public class TaskService {
         try {
             return taskDAO.findAll();
         } catch(SQLException e) {
-            throw new TaskNotFoundException("Tasks not found", e);
+            throw new DataAccessException("Failed to retrieve all tasks", e);
         }
 
     }
-    public List<Task> getByStatus(TaskStatus status) {
-        if(status == null) throw new InvalidStatusException("Null Status Not Accepted");
+    public Optional<Task> getByDescription(String description) {
+        this.validDescription(description);
         try {
-            return taskDAO.getAllByStatus(status);
+            return taskDAO.getByDescription(description);
         } catch (SQLException e) {
-            throw new TaskNotFoundException("Task(s) with Status: " + status.toString().replace("_","") + " not found",e);
+            throw new DataAccessException("Failed to retrieve task by description: " + description, e);
         }
     }
 
     public boolean updateDescription(String id, String desc) {
-        if(id == null || id.length() < 5) throw new InvalidTaskIdException("The id: " + id + " is not valid");
-        else if(desc == null || desc.length() < 5) throw new InvalidTaskDescriptionException("Task description: " + desc + " is too short");
+        this.validId(id);
+        this.validDescription(desc);
         try {
             return taskDAO.update(id, desc);
         } catch(SQLException e) {
-            throw new TaskNotFoundException("Task with ID: " + id + "could not be updated",e);
+            throw new DataAccessException("Failed to update description of task with ID: " + id, e);
         }
     }
 
     public boolean updateStatus(String id, TaskStatus status) {
-        if(id == null || id.length() < 5) throw new InvalidTaskIdException("The id: " + id + " is not valid");
-        else if(status == null) throw new InvalidStatusException("Null Status Not Accepted");
+        this.validId(id);
+        this.validStatus(status);
         try {
             return taskDAO.update(id, status);
         } catch(SQLException e) {
-            throw new TaskNotFoundException("Task with ID: " + id + "could not be updated", e);
+            throw new DataAccessException("Failed to update status of task with ID: " + id, e);
         }
     }
 
     public List<Task> getAllByStatus(TaskStatus status) throws InvalidStatusException {
-        if(status == null) throw new InvalidStatusException("Null Status Not Accepted");
+        validStatus(status);
         try {
             return taskDAO.getAllByStatus(status);
         } catch (SQLException e) {
-            throw new TaskNotFoundException("Tasks with Status: " + status.toString() + " could not be found", e);
+            throw new DataAccessException("Failed to get all tasks with status: " + status, e);
         }
     }
 
-    private boolean validDescription(String desc) {
-        return false;
+    public boolean checkDuplicateID(String id) {
+        this.validId(id);
+        try {
+            return taskDAO.checkById(id);
+        } catch (SQLException e) {
+            throw new DataAccessException("Failed to find task with ID: " + id, e);
+        }
     }
-    private boolean validStatus(TaskStatus status) {
-        return false;
+
+    private void validDescription(String desc) {
+        if(desc == null || desc.length() < 5) throw new InvalidTaskDescriptionException("The description: " + desc + " is not valid");
     }
-    private boolean validId(String id) {
-        return false;
+    private void validStatus(TaskStatus status) {
+        if(status == null) throw new InvalidStatusException("The null status is not valid");
     }
+    private void validId(String id) {
+        if(id == null || id.length() < 5) throw new InvalidTaskIdException("The id: " + id + " is not valid");
+
+    }
+
 }
-/*
-* public static void validateTask(Task t) {
-        if(t.getDescription() == null || t.getStatus() == null) {
-            throw new RuntimeException("Description or status of task cannot be null");
-        }
-    }
-    *
-    * public static void checkDuplicates(Task t, TaskRepository tp) {
-        if (!tp.isEmpty() && tp.containsTask(t)) {
-            throw new RuntimeException("Task.Task already exists");
-        }
-    }
-    * */

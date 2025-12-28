@@ -53,7 +53,7 @@ public class Task {
     public void setDateCreated(LocalDate dateCreated) {
         this.dateCreated = dateCreated;
     }
-    public void setUpdatedAt(LocalDate updatedAt) {
+    public void setDateUpdated(LocalDate updatedAt) {
         dateUpdated = updatedAt;
     }
     public void setDescription(String description) {

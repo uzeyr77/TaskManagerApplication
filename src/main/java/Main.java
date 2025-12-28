@@ -28,8 +28,12 @@ public class Main {
 //        System.out.println(taskDAO.getAllByStatus(TaskStatus.DONE));
 
         TaskService taskService = new TaskService(taskDAO);
-        //System.out.println(taskService.insertTask(new Task("NOT DONE", TaskStatus.IN_PROGRESS)));
-        //System.out.println(taskService.updateStatus("44OUD",TaskStatus.DONE));
+        //taskService.createTask("test to see if check works", TaskStatus.TODO);
+        //System.out.println(taskService.getTaskByID("QUWAT"));
+//        System.out.println(taskService.getAllTasks());
+//        System.out.println(taskService.getByDescription("NOT DONE"));
+//        System.out.println(taskService.getTaskByID("12334"));
+//        //System.out.println(taskService.updateStatus("44OUD",TaskStatus.DONE));
 //        System.out.println(taskService.getTaskByID("44OUD"));
 //        System.out.println(taskService.updateDescription("44OUD", "testing456"));
 //        System.out.println(taskService.getByStatus(TaskStatus.DONE));
@@ -43,6 +47,9 @@ public class Main {
 //        System.out.println(taskService.getAllTasks());
 //        System.out.println(taskService.updateStatus("QUWAT", TaskStatus.NONE));
 
-
+        //System.out.println(taskService.checkDuplicateID("1VQFH"));
+        //System.out.println(taskService.createTask("get in there lad", TaskStatus.IN_PROGRESS));
+        System.out.println(taskService.getAllTasks());
+        System.out.println(taskService.getTaskByID("QUWAT"));
     }
 }
