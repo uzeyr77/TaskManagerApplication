@@ -12,7 +12,8 @@ public class TaskDAO {
         public TaskDAO(Database dataSource) {
         this.dataSource = dataSource;
     }
-        public boolean save(Task task) throws SQLException{
+
+    public boolean save(Task task) throws SQLException{
         String sql = "INSERT INTO tasks (ID, Description, Status, DateCreated, UpdatedAt) VALUES (?, ?, ?, ?, ?)";
         try(
             Connection con = this.dataSource.getConnection();
@@ -91,6 +92,9 @@ public class TaskDAO {
             ) {
             pstmt.setString(1,id);
             ResultSet rs = pstmt.executeQuery();
+            if(rs.getString("Status") == null || rs.getString("ID") == null || rs.getString("Description") == null) {
+                return Optional.empty();
+            }
             task = resultSetToTask(id, rs.getString("Description"), rs.getString("Status"), rs.getString("DateCreated"),rs.getString("UpdatedAt"));
 
 
@@ -124,6 +128,9 @@ public class TaskDAO {
             ) {
             pstmt.setString(1,desc);
             ResultSet rs = pstmt.executeQuery();
+            if(rs.getString("Status") == null || rs.getString("ID") == null || rs.getString("Description") == null) {
+                return Optional.empty();
+            }
             task = resultSetToTask(rs.getString("ID"), desc, rs.getString("Status"), rs.getString("DateCreated"),rs.getString("UpdatedAt"));
             return Optional.ofNullable(task);
         }
@@ -139,10 +146,17 @@ public class TaskDAO {
             ) {
             pstmt.setString(1,TaskStatus.taskStatusToString(status));
             ResultSet rs = pstmt.executeQuery();
+            if(rs.getString("Status") == null || rs.getString("ID") == null || rs.getString("Description") == null) {
+                return taskList;
+            }
             while (rs.next()) {
                 task = new Task(rs.getString("ID"), rs.getString("Description"), status);
                 task.setDateCreated(LocalDate.parse(rs.getString("DateCreated")));
-                task.setDateUpdated(LocalDate.parse(rs.getString("UpdatedAt")));
+                if(rs.getString("UpdatedAt") == null) {
+                    task.setDateUpdated(null);
+                } else {
+                    task.setDateUpdated(LocalDate.parse(rs.getString("UpdatedAt")));
+                }
                 taskList.add(task);
             }
             return taskList;
