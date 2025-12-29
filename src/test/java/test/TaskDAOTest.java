@@ -25,15 +25,14 @@ class TaskDAOTest {
         //con = database.getConnection();
         taskDAO = new TaskDAO(database);
         task = new Task("12345", "testing taskdao class", TaskStatus.IN_PROGRESS);
-        task2 = new Task("UZIMA","TESTING SAVE", TaskStatus.TODO);
+        task2 = new Task("67890","TESTING SAVE", TaskStatus.TODO);
         taskDAO.save(task);
         taskDAO.save(task2);
     }
     @AfterEach
     void close() throws SQLException {
         //database.closeConnection(con);
-        taskDAO.delete(task.getId());
-        taskDAO.delete(task2.getId());
+        taskDAO.deleteAll();
     }
     @Test
     void test_save_0() throws SQLException {
@@ -55,8 +54,8 @@ class TaskDAOTest {
     }
     @Test
     void test_save_3() throws SQLException {
-        if(taskDAO.get("UZIMA").isPresent()) {
-            assertEquals(taskDAO.get("UZIMA").get(), task2);
+        if(taskDAO.get("67890").isPresent()) {
+            assertEquals(taskDAO.get("67890").get(), task2);
         } else {
             assertNull(task2);
         }
@@ -88,12 +87,12 @@ class TaskDAOTest {
     }
     @Test
     void test_checkById_1() throws SQLException {
-        assertTrue(taskDAO.checkById("UZIMA"));
+        assertTrue(taskDAO.checkById("67890"));
     }
     @Test
     void test_checkById_2() throws SQLException {
         // should return false since no record of id = "67890" exists
-        assertFalse(taskDAO.checkById("67890"));
+        assertFalse(taskDAO.checkById("67891"));
     }
     @Test
     void test_updateDescription_0() throws SQLException {
@@ -111,9 +110,9 @@ class TaskDAOTest {
     }
     @Test
     void test_updatedDescription_2() throws SQLException {
-        taskDAO.update("UZIMA", "testing the dao class");
-        if(taskDAO.get("UZIMA").isPresent()) {
-            assertEquals("testing the dao class", taskDAO.get("UZIMA").get().getDescription());
+        taskDAO.update("67890", "testing the dao class");
+        if(taskDAO.get("67890").isPresent()) {
+            assertEquals("testing the dao class", taskDAO.get("67890").get().getDescription());
         }
     }
     @Test
@@ -129,9 +128,9 @@ class TaskDAOTest {
     }
     @Test
     void test_updatedStatus_2() throws SQLException {
-        taskDAO.update("UZIMA", TaskStatus.DONE);
-        if(taskDAO.get("UZIMA").isPresent()) {
-            assertEquals(TaskStatus.DONE,taskDAO.get("UZIMA").get().getStatus());
+        taskDAO.update("67890", TaskStatus.DONE);
+        if(taskDAO.get("67890").isPresent()) {
+            assertEquals(TaskStatus.DONE,taskDAO.get("67890").get().getStatus());
         }
     }
     @Test

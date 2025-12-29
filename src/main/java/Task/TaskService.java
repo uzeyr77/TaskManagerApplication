@@ -24,10 +24,10 @@ public class TaskService {
 
         return uniqueId.toString();
     }
-    public boolean createTask(String description,TaskStatus status) {
+    public boolean createTask(String description,TaskStatus status) throws InvalidStatusException, InvalidTaskDescriptionException{
         // validate task first
-        this.validDescription(description);
-        this.validStatus(status);
+        if(validDescription(description)) throw new InvalidTaskDescriptionException("Not a valid description: " + description);
+        if(status == null) throw new InvalidStatusException("Not a valid status: " + null);
         String id = this.generateId();
         Task task = new Task(id, description, status);
         try {
@@ -37,7 +37,7 @@ public class TaskService {
         }
     }
     public boolean deleteTask(String id) {
-        this.validId(id);
+        if(this.validId(id)) throw new InvalidTaskIdException("Not a valid ID: " + id);
         try {
             return taskDAO.delete(id);
         } catch (SQLException e) {
@@ -45,7 +45,7 @@ public class TaskService {
         }
     }
     public Optional<Task> getTaskByID(String id) {
-        this.validId(id);
+        if(this.validId(id)) throw new InvalidTaskIdException("Not a valid ID: " + id);
         try {
             return taskDAO.get(id);
         } catch (SQLException e) {
@@ -55,7 +55,7 @@ public class TaskService {
 
     }
     public Optional<Task> getTaskByDescription(String desc) {
-        this.validDescription(desc);
+        if(this.validDescription(desc)) throw new InvalidTaskDescriptionException("The description is not valid: " + desc);
         try {
             return taskDAO.getByDescription(desc);
         } catch(SQLException e) {
@@ -72,7 +72,7 @@ public class TaskService {
 
     }
     public Optional<Task> getByDescription(String description) {
-        this.validDescription(description);
+        if(this.validDescription(description)) throw new InvalidTaskDescriptionException("The description is not valid: " + description);
         try {
             return taskDAO.getByDescription(description);
         } catch (SQLException e) {
@@ -81,8 +81,8 @@ public class TaskService {
     }
 
     public boolean updateDescription(String id, String desc) {
-        this.validId(id);
-        this.validDescription(desc);
+        if(this.validId(id)) throw new InvalidTaskIdException("The id is not valid: " + id);
+        if(this.validDescription(desc)) throw new InvalidTaskDescriptionException("The description is not valid: " + desc);
         try {
             return taskDAO.update(id, desc);
         } catch(SQLException e) {
@@ -91,8 +91,8 @@ public class TaskService {
     }
 
     public boolean updateStatus(String id, TaskStatus status) {
-        this.validId(id);
-        this.validStatus(status);
+        if(this.validId(id)) throw new InvalidTaskIdException("The id is not valid: " + id);
+        if(status == null) throw new InvalidStatusException("The status is not valid: " + null);
         try {
             return taskDAO.update(id, status);
         } catch(SQLException e) {
@@ -101,7 +101,7 @@ public class TaskService {
     }
 
     public List<Task> getAllByStatus(TaskStatus status) throws InvalidStatusException {
-        validStatus(status);
+        if(status == null) throw new InvalidStatusException("The status is not valid: " + null);
         try {
             return taskDAO.getAllByStatus(status);
         } catch (SQLException e) {
@@ -110,22 +110,26 @@ public class TaskService {
     }
 
     public boolean checkDuplicateID(String id) {
-        this.validId(id);
+        if(validId(id)) throw new InvalidTaskIdException("The id is not valid: " + id);
         try {
             return taskDAO.checkById(id);
         } catch (SQLException e) {
-            throw new DataAccessException("Failed to find task with ID: " + id, e);
+            throw new DataAccessException("Failed to check record for Id: " + id, e);
         }
     }
 
-    private void validDescription(String desc) {
-        if(desc == null || desc.length() < 5) throw new InvalidTaskDescriptionException("The description: " + desc + " is not valid");
+    public boolean deleteAllTasks() {
+        try {
+            return taskDAO.deleteAll();
+        } catch (SQLException e) {
+            throw new DataAccessException("Failed to delete all tasks",e);
+        }
     }
-    private void validStatus(TaskStatus status) {
-        if(status == null) throw new InvalidStatusException("The null status is not valid");
+    private boolean validDescription(String desc) {
+        return desc == null || desc.length() < 5;
     }
-    private void validId(String id) {
-        if(id == null || id.length() < 5) throw new InvalidTaskIdException("The id: " + id + " is not valid");
+    private boolean validId(String id) {
+        return id == null || id.length() < 5;
 
     }
 

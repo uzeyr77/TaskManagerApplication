@@ -128,7 +128,7 @@ public class TaskDAO {
             ) {
             pstmt.setString(1,desc);
             ResultSet rs = pstmt.executeQuery();
-            if(rs.getString("Status") == null || rs.getString("ID") == null || rs.getString("Description") == null) {
+            if(rs.getString("Status") == null || rs.getString("ID") == null || desc == null) {
                 return Optional.empty();
             }
             task = resultSetToTask(rs.getString("ID"), desc, rs.getString("Status"), rs.getString("DateCreated"),rs.getString("UpdatedAt"));
@@ -161,7 +161,18 @@ public class TaskDAO {
             }
             return taskList;
         }
-
+    }
+    public boolean deleteAll() throws SQLException {
+        int result = 0;
+        String sql = "DELETE FROM tasks";
+        try(
+                Connection con = dataSource.getConnection();
+                PreparedStatement pstmt = con.prepareStatement(sql);
+        ) {
+            //pstmt.setString(1,);
+            result = pstmt.executeUpdate();
+            return true;
+        }
     }
 
     private Task resultSetToTask(String id, String description, String status, String dateCreated, String dateUpdated) {
