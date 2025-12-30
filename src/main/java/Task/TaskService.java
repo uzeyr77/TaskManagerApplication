@@ -54,15 +54,6 @@ public class TaskService {
 
 
     }
-    public Optional<Task> getTaskByDescription(String desc) {
-        if(this.validDescription(desc)) throw new InvalidTaskDescriptionException("The description is not valid: " + desc);
-        try {
-            return taskDAO.getByDescription(desc);
-        } catch(SQLException e) {
-            throw new DataAccessException("Failed to retrieve task with Description: " + desc, e);
-        }
-
-    }
     public List<Task> getAllTasks() {
         try {
             return taskDAO.findAll();

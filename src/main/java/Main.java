@@ -1,6 +1,6 @@
 
 
-import Task.Task;
+import Task.*;
 import Task.TaskDAO;
 import Task.TaskStatus;
 import Task.Database;
@@ -10,9 +10,8 @@ import java.sql.SQLException;
 
 public class Main {
     public static void main(String[] args) throws SQLException {
-    Database db = new Database();
-    TaskDAO taskDAO = new TaskDAO(db);
-    TaskService taskService = new TaskService(taskDAO);
-    taskService.createTask("New database", TaskStatus.IN_PROGRESS);
+        Database db = new Database();
+        UserInterface ui = new UserInterface(db);
+        ui.run();
     }
 }
