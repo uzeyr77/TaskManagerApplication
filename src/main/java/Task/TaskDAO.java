@@ -14,7 +14,7 @@ public class TaskDAO {
     }
 
     public boolean save(Task task) throws SQLException{
-        String sql = "INSERT INTO tasks (ID, Description, Status, DateCreated, UpdatedAt) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO taskRecord (ID, Description, Status, DateCreated, DateUpdated) VALUES (?, ?, ?, ?, ?)";
         try(
             Connection con = this.dataSource.getConnection();
             PreparedStatement pstmt = con.prepareStatement(sql);
@@ -29,7 +29,7 @@ public class TaskDAO {
     }
     public boolean checkById(String id) throws SQLException{
         //int result = 0;
-            String sql = "SELECT * FROM tasks WHERE ID=?";
+            String sql = "SELECT * FROM taskRecord WHERE ID=?";
 
             try(
                 Connection con = this.dataSource.getConnection();
@@ -42,7 +42,7 @@ public class TaskDAO {
     }
 
     public boolean update(String id, String newDesc) throws SQLException {
-        String sql = "UPDATE tasks SET Description = ? , UpdatedAt = ? WHERE ID = ?"; //UPDATE my_table SET columnName, columnName, WHERE [condition]
+        String sql = "UPDATE taskRecord SET Description = ? , DateUpdated = ? WHERE ID = ?"; //UPDATE my_table SET columnName, columnName, WHERE [condition]
         try(
             Connection con = dataSource.getConnection();
             PreparedStatement pstmt = con.prepareStatement(sql);
@@ -56,7 +56,7 @@ public class TaskDAO {
         }
     }
     public boolean update(String id, TaskStatus newStatus) throws SQLException{
-        String sql = "UPDATE tasks SET Status = ?, UpdatedAt = ? WHERE ID= ?"; // updating the description
+        String sql = "UPDATE taskRecord SET Status = ?, DateUpdated = ? WHERE ID= ?"; // updating the description
         int result = 0;
         try (
             Connection con = dataSource.getConnection();
@@ -72,7 +72,7 @@ public class TaskDAO {
     }
     public boolean delete(String id) throws SQLException{
         int result = 0;
-        String sql = "DELETE FROM tasks WHERE ID = ?";
+        String sql = "DELETE FROM taskRecord WHERE ID = ?";
         try(
             Connection con = dataSource.getConnection();
             PreparedStatement pstmt = con.prepareStatement(sql);
@@ -84,7 +84,7 @@ public class TaskDAO {
     }
     public Optional<Task> get(String id) throws SQLException {
         Task task = null;
-        String sql = "SELECT ID, Description, Status, DateCreated, UpdatedAt FROM tasks WHERE ID= ?"; // SELECT column_name FROM your_table_name WHERE id = ?"
+        String sql = "SELECT ID, Description, Status, DateCreated, DateUpdated FROM taskRecord WHERE ID= ?"; // SELECT column_name FROM your_table_name WHERE id = ?"
         try (
             Connection con = dataSource.getConnection();
             PreparedStatement pstmt = con.prepareStatement(sql);
@@ -95,7 +95,7 @@ public class TaskDAO {
             if(rs.getString("Status") == null || rs.getString("ID") == null || rs.getString("Description") == null) {
                 return Optional.empty();
             }
-            task = resultSetToTask(id, rs.getString("Description"), rs.getString("Status"), rs.getString("DateCreated"),rs.getString("UpdatedAt"));
+            task = resultSetToTask(id, rs.getString("Description"), rs.getString("Status"), rs.getString("DateCreated"),rs.getString("DateUpdated"));
 
 
             return Optional.ofNullable(task);
@@ -105,14 +105,14 @@ public class TaskDAO {
     public List<Task> findAll() throws SQLException {
         List<Task> taskList = new ArrayList<>();
         Task task;
-        String sql = "SELECT * FROM tasks"; //  * means all"
+        String sql = "SELECT * FROM taskRecord"; //  * means all"
         try (
                 Connection con = dataSource.getConnection();
                 PreparedStatement pstmt = con.prepareStatement(sql);
                 ResultSet rs = pstmt.executeQuery();
                 ) {
             while (rs.next()) {
-                task = resultSetToTask(rs.getString("ID"), rs.getString("Description"), rs.getString("Status"), rs.getString("DateCreated"),rs.getString("UpdatedAt"));
+                task = resultSetToTask(rs.getString("ID"), rs.getString("Description"), rs.getString("Status"), rs.getString("DateCreated"),rs.getString("DateUpdated"));
                 taskList.add(task);
             }
             return taskList;
@@ -121,7 +121,7 @@ public class TaskDAO {
     }
     public Optional<Task> getByDescription(String desc) throws SQLException {
         Task task = null;
-        String sql = "SELECT ID, Status, DateCreated, UpdatedAt FROM tasks WHERE Description= ?"; // SELECT column_name FROM your_table_name WHERE description = ?"
+        String sql = "SELECT ID, Status, DateCreated, DateUpdated FROM taskRecord WHERE Description= ?"; // SELECT column_name FROM your_table_name WHERE description = ?"
         try(
             Connection con = dataSource.getConnection();
             PreparedStatement pstmt = con.prepareStatement(sql);
@@ -131,13 +131,13 @@ public class TaskDAO {
             if(rs.getString("Status") == null || rs.getString("ID") == null || desc == null) {
                 return Optional.empty();
             }
-            task = resultSetToTask(rs.getString("ID"), desc, rs.getString("Status"), rs.getString("DateCreated"),rs.getString("UpdatedAt"));
+            task = resultSetToTask(rs.getString("ID"), desc, rs.getString("Status"), rs.getString("DateCreated"),rs.getString("DateUpdated"));
             return Optional.ofNullable(task);
         }
     }
 
     public List<Task> getAllByStatus(TaskStatus status) throws SQLException {
-        String sql = "SELECT * FROM tasks WHERE Status= ?"; //  * means all condition = by status
+        String sql = "SELECT * FROM taskRecord WHERE Status= ?"; //  * means all condition = by status
         List<Task> taskList = new ArrayList<>();
         Task task;
         try(
@@ -152,10 +152,10 @@ public class TaskDAO {
             while (rs.next()) {
                 task = new Task(rs.getString("ID"), rs.getString("Description"), status);
                 task.setDateCreated(LocalDate.parse(rs.getString("DateCreated")));
-                if(rs.getString("UpdatedAt") == null) {
+                if(rs.getString("DateUpdated") == null) {
                     task.setDateUpdated(null);
                 } else {
-                    task.setDateUpdated(LocalDate.parse(rs.getString("UpdatedAt")));
+                    task.setDateUpdated(LocalDate.parse(rs.getString("DateUpdated")));
                 }
                 taskList.add(task);
             }
@@ -164,7 +164,7 @@ public class TaskDAO {
     }
     public boolean deleteAll() throws SQLException {
         int result = 0;
-        String sql = "DELETE FROM tasks";
+        String sql = "DELETE FROM taskRecord";
         try(
                 Connection con = dataSource.getConnection();
                 PreparedStatement pstmt = con.prepareStatement(sql);

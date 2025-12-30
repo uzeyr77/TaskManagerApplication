@@ -4,7 +4,7 @@ import java.sql.*;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 public class Database {
-    private static String url = "jdbc:sqlite:C:/Users/uzeyr/OneDrive/Documents/sqlite/TaskDB.db";
+    private static String url = "jdbc:sqlite:Database/app.db";
     private static String user = "root";
     private static String password = "password";
 

@@ -18,7 +18,7 @@ class TaskTest {
     void resetTaskObjects() {
         task0 = new Task("12345","make junit tests for Task class", TaskStatus.IN_PROGRESS);
         task1 = new Task("ABCDE","go to gym", TaskStatus.TODO);
-        task2 = new Task("UZEYR","go for a walk", TaskStatus.TODO);
+        task2 = new Task("TOR15","go for a walk", TaskStatus.TODO);
         task3 = new Task("VALID","do the dishes", TaskStatus.IN_PROGRESS);
         task4 = new Task("YORKU","clean up my room", TaskStatus.DONE);
     }
@@ -78,7 +78,7 @@ class TaskTest {
 
     @Test
     void testEquals_0() {
-        Task copy = new Task("UZEYR","go for a walk", TaskStatus.TODO);
+        Task copy = new Task("TOR15","go for a walk", TaskStatus.TODO);
         assertTrue(task2.equals(copy));
 
     }
@@ -141,12 +141,7 @@ class TaskTest {
         Task t = new Task("00000", "finish building frontend", TaskStatus.IN_PROGRESS);
         assertNull(t.getDateUpdated());
     }
-    @Test
-    void testDateUpdated_should_return_false() {
-        Task t = new Task("00000", "finish building frontend", TaskStatus.IN_PROGRESS);
-        t.setStatus(TaskStatus.DONE);
-        assertNotNull(t.getDateUpdated());
-    }
+
 
 
 

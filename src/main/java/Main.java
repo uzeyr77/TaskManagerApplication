@@ -13,6 +13,6 @@ public class Main {
     Database db = new Database();
     TaskDAO taskDAO = new TaskDAO(db);
     TaskService taskService = new TaskService(taskDAO);
-
+    taskService.createTask("New database", TaskStatus.IN_PROGRESS);
     }
 }
